@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import Swipe from  './swipe';
+import Swipe from  '../swipe';
 
 export default function HomeScreen() {
   return (

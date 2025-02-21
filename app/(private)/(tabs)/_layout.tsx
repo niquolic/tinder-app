@@ -1,13 +1,13 @@
-import { Redirect, Tabs, usePathname, useRouter } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
 import * as SecureStore from "expo-secure-store";
 import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useUserStore } from '@/store/userStore';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const getUserItem = async (key: string) => {
   try {
@@ -21,11 +21,8 @@ const getUserItem = async (key: string) => {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const web = Platform.OS === "web";
-  const router = useRouter();
   const { isAuthenticated, setIsAuthenticated }: any = useUserStore();
   const [isReady, setIsReady] = useState(false);
-
-  const pathname = usePathname();
 
   useEffect(() => {
     async function getUserInSecureStore() {
@@ -68,15 +65,22 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: 'HomeScreen',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+            title: 'Match',
+            tabBarIcon: ({ color }) => <Icon name="heart" size={28} color={color} />,
           }}
         />
         <Tabs.Screen
-          name="/profil/settings/index"
+          name="profil/settings/index"
           options={{
             title: 'Settings',
-            tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+            tabBarIcon: ({ color }) => <Icon name="cog" size={28} color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="profil/[id]"
+          options={{
+            title: 'Profil',
+            tabBarIcon: ({ color }) => <Icon name="user" size={28} color={color} />,
           }}
         />
       </Tabs>

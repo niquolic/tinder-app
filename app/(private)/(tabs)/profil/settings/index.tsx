@@ -36,7 +36,7 @@ export default function Settings() {
 
       <View style={styles.section}>
         <Text style={styles.sectionHeader}>À propos</Text>
-        <Text style={styles.item} onPress={() => router.push('../about')}>À propos de nous</Text>
+        <Text style={styles.item} onPress={() => router.push('../../about')}>À propos de nous</Text>
       </View>
     </ScrollView>
   );
