@@ -1,46 +1,30 @@
 import { Redirect, Tabs } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import * as SecureStore from "expo-secure-store";
 import { HapticTab } from '@/components/HapticTab';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useUserStore } from '@/store/userStore';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
-const getUserItem = async (key: string) => {
-  try {
-    return await SecureStore.getItemAsync(key);
-  } catch (error) {
-    console.error("Erreur de lecture sécurisée:", error);
-    return null;
-  }
-};
+import { getUserInSecureStore } from '@/constants/Tokens';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const web = Platform.OS === "web";
   const { isAuthenticated, setIsAuthenticated }: any = useUserStore();
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    async function getUserInSecureStore() {
-      let token = null;
-      if (web) {
-        token = localStorage.getItem("token");
-      }
-      if (!web) {
-        token = await getUserItem("token");
-      }
-      if (token) {
+    const checkToken = async () => {
+      const token = await getUserInSecureStore();
+      if (token !== null) {
         setIsAuthenticated(true);
         return <Redirect href="/" />;
       } else {
         setIsReady(true);
       }
-    }
-    getUserInSecureStore();
+    };
+    checkToken();
   }, []);
 
   if (!isAuthenticated && isReady) {

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useMutation } from "react-query";
-import { View, TextInput, Button, Text } from "react-native";
+import { View, TextInput, Button, Text, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { useUserStore } from "@/store/userStore";
 import * as SecureStore from "expo-secure-store";
@@ -10,12 +10,17 @@ const LoginScreen = () => {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("")
 
   const saveSecureItem = async (key: string, value: string) => {
     try {
-      await SecureStore.setItemAsync(key, value, {
-      keychainAccessible: SecureStore.WHEN_UNLOCKED,
-      });
+      if (Platform.OS === "web") {
+        localStorage.setItem(key, value);
+      } else {
+        await SecureStore.setItemAsync(key, value, {
+          keychainAccessible: SecureStore.WHEN_UNLOCKED,
+        });
+      }
     } catch (error) {
       console.error("Erreur lors du stockage:", error);
     }
@@ -23,17 +28,21 @@ const LoginScreen = () => {
 
   const mutation = useMutation({
     mutationFn: async (credentials: { email: string; password: string }) => {
-      return fetch("https://jsonplaceholder.typicode.com/posts", {
+      return fetch("https://api-tinder-next.vercel.app/api/auth/login", {
         method: "POST",
+        headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ username: email, password }),
-        credentials: "include",
       }).then((res) => res.json());
     },
     onSuccess: (data) => {
-      setIsAuthenticated(true);
-      setUser(data);
-      saveSecureItem("token", JSON.stringify(data));
-      router.push("/");
+      if (data.success) {
+        setIsAuthenticated(true);
+        setUser(data);
+        saveSecureItem("token", data.token);
+        router.push("/");
+      } else {
+        setErrorMessage("L'utilisateur ou le mot de passe est incorrect.")
+      }
     },
     onError: (error) => {
       console.error("error", error);
@@ -41,6 +50,7 @@ const LoginScreen = () => {
   });
 
   const handleSubmit = () => {
+    setErrorMessage("")
     mutation.mutate({ email, password });
   }
 
@@ -70,6 +80,9 @@ const LoginScreen = () => {
           onChangeText={(text) => setPassword(text)}
           value={password}
         />
+        { errorMessage !== '' ? (
+          <Text style={{ color: "red", marginBottom: 10 }}>{errorMessage}</Text>
+        ) : null}
         <Button title="Login" onPress={handleSubmit} />
         <Text
           style={{ marginTop: 10, color: "blue", textAlign: "center" }}
