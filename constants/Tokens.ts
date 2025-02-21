@@ -21,3 +21,29 @@ export async function getUserInSecureStore() {
   }
   return token
 }
+
+export async function getUserInfosInSecureStore() {
+  const web = Platform.OS === "web";
+  let user = null;
+  if (web) {
+    user = localStorage.getItem("user");
+  }
+  if (!web) {
+    user = await getUserItem("user");
+  }
+  return user
+}
+
+export const saveSecureItem = async (key: string, value: string) => {
+  try {
+    if (Platform.OS === "web") {
+      localStorage.setItem(key, value);
+    } else {
+      await SecureStore.setItemAsync(key, value, {
+        keychainAccessible: SecureStore.WHEN_UNLOCKED,
+      });
+    }
+  } catch (error) {
+    console.error("Erreur lors du stockage:", error);
+  }
+};

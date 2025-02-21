@@ -78,18 +78,18 @@ export default function Swipe() {
     mutation.mutate({ liked, userId });
   };
 
+  const onSwipedRight = (index: number) => {
+    const userId = cards[index].id;
+    onSubmit(true, userId);
+  };
+
+  const onSwipedLeft = (index: number) => {
+    const userId = cards[index].id;
+    onSubmit(false, userId);
+  };
+
   if (isLoading) return <View style={styles.centered}><Text>Chargement...</Text></View>;
   if (error) return <View style={styles.centered}><Text>Erreur !</Text></View>;
-
-  // const { data: cards, isLoading, error } = useQuery({
-  //     queryKey: '[profile]',
-  //     queryFn: () => fetch('https://api-tinder-next.vercel.app/api/profiles')
-  //       .then(res => res.json())
-  //   });
-  
-  //   const onSwiped = () => {
-  //     cards.slice(1);
-  //   };
 
   return (
     <View style={styles.container}>
@@ -99,6 +99,7 @@ export default function Swipe() {
         </View>
       )}
       {cards.length > 0 ? (
+        console.log(cards.length),
         <Swiper
           cards={cards}
           renderCard={(card: Card) => (
@@ -118,7 +119,8 @@ export default function Swipe() {
           )}
           stackSize={3}
           verticalSwipe={false}
-          onSwiped={onSwiped}
+          onSwipedRight={onSwipedRight}
+          onSwipedLeft={onSwipedLeft}
           backgroundColor={'#fff'}
           containerStyle={styles.swiperContainer}
           cardStyle={styles.swiperCard}

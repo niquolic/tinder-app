@@ -54,10 +54,10 @@ export default function TabLayout() {
           }}
         />
         <Tabs.Screen
-          name="profil/settings/index"
+          name="messages"
           options={{
-            title: 'Settings',
-            tabBarIcon: ({ color }) => <Icon name="cog" size={28} color={color} />,
+            title: 'Messages',
+            tabBarIcon: ({ color }) => <Icon name="envelope" size={28} color={color} />,
           }}
         />
         <Tabs.Screen
@@ -65,6 +65,13 @@ export default function TabLayout() {
           options={{
             title: 'Profil',
             tabBarIcon: ({ color }) => <Icon name="user" size={28} color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="profil/settings/index"
+          options={{
+            title: 'Settings',
+            tabBarIcon: ({ color }) => <Icon name="cog" size={28} color={color} />,
           }}
         />
       </Tabs>

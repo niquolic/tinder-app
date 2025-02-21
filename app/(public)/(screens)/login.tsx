@@ -4,6 +4,7 @@ import { View, TextInput, Button, Text, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import { useUserStore } from "@/store/userStore";
 import * as SecureStore from "expo-secure-store";
+import { saveSecureItem } from "@/constants/Tokens";
 
 const LoginScreen = () => {
   const {setIsAuthenticated, setUser} : any = useUserStore();
@@ -11,20 +12,6 @@ const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("")
-
-  const saveSecureItem = async (key: string, value: string) => {
-    try {
-      if (Platform.OS === "web") {
-        localStorage.setItem(key, value);
-      } else {
-        await SecureStore.setItemAsync(key, value, {
-          keychainAccessible: SecureStore.WHEN_UNLOCKED,
-        });
-      }
-    } catch (error) {
-      console.error("Erreur lors du stockage:", error);
-    }
-  };
 
   const mutation = useMutation({
     mutationFn: async (credentials: { email: string; password: string }) => {
@@ -39,6 +26,12 @@ const LoginScreen = () => {
         setIsAuthenticated(true);
         setUser(data);
         saveSecureItem("token", data.token);
+        saveSecureItem("user", JSON.stringify({ firstName: 'John',
+          lastName: 'Doe',
+          email: 'john.doe@example.com',
+          age: 28,
+          photo: 'https://randomuser.me/api/portraits/men/28.jpg'
+        }));
         router.push("/");
       } else {
         setErrorMessage("L'utilisateur ou le mot de passe est incorrect.")
